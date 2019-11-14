@@ -1,5 +1,5 @@
 set(CMAKE_LEGACY_CYGWIN_WIN32 0)
-cmake_minimum_required(VERSION 2.8.5)
+cmake_minimum_required(VERSION 3.10)
 
 project(cJSON C)
 
@@ -20,7 +20,7 @@ option(ENABLE_CUSTOM_COMPILER_FLAGS "Enables custom compiler flags" ON)
 if (ENABLE_CUSTOM_COMPILER_FLAGS)
     if (("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang") OR ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU"))
         list(APPEND custom_compiler_flags
-            -std=c89
+#            -std=c89
             -pedantic
             -Wall
             -Wextra
@@ -120,19 +120,20 @@ set(CJSON_LIB cjson)
 file(GLOB HEADERS cJSON.h)
 set(SOURCES cJSON.c)
 
-option(BUILD_SHARED_AND_STATIC_LIBS "Build both shared and static libraries" Off)
+option(BUILD_SHARED_AND_STATIC_LIBS "Build both shared and static libraries" OFF)
 option(CJSON_OVERRIDE_BUILD_SHARED_LIBS "Override BUILD_SHARED_LIBS with CJSON_BUILD_SHARED_LIBS" OFF)
-option(CJSON_BUILD_SHARED_LIBS "Overrides BUILD_SHARED_LIBS if CJSON_OVERRIDE_BUILD_SHARED_LIBS is enabled" ON)
+option(CJSON_BUILD_SHARED_LIBS "Overrides BUILD_SHARED_LIBS if CJSON_OVERRIDE_BUILD_SHARED_LIBS is enabled" OFF)
 
 if ((CJSON_OVERRIDE_BUILD_SHARED_LIBS AND CJSON_BUILD_SHARED_LIBS) OR ((NOT CJSON_OVERRIDE_BUILD_SHARED_LIBS) AND BUILD_SHARED_LIBS))
     set(CJSON_LIBRARY_TYPE SHARED)
 else()
     set(CJSON_LIBRARY_TYPE STATIC)
 endif()
-
+set(CJSON_LIBRARY_TYPE STATIC)
 
 if (NOT BUILD_SHARED_AND_STATIC_LIBS)
     add_library("${CJSON_LIB}" "${CJSON_LIBRARY_TYPE}" "${HEADERS}" "${SOURCES}")
+    target_include_directories(${CJSON_LIB} INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 else()
     # See https://cmake.org/Wiki/CMake_FAQ#How_do_I_make_my_shared_and_static_libraries_have_the_same_root_name.2C_but_different_suffixes.3F
     add_library("${CJSON_LIB}" SHARED "${HEADERS}" "${SOURCES}")
