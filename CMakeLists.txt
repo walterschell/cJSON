@@ -133,6 +133,7 @@ endif()
 
 if (NOT BUILD_SHARED_AND_STATIC_LIBS)
     add_library("${CJSON_LIB}" "${CJSON_LIBRARY_TYPE}" "${HEADERS}" "${SOURCES}")
+    target_include_directories(${CJSON_LIB} INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 else()
     # See https://cmake.org/Wiki/CMake_FAQ#How_do_I_make_my_shared_and_static_libraries_have_the_same_root_name.2C_but_different_suffixes.3F
     add_library("${CJSON_LIB}" SHARED "${HEADERS}" "${SOURCES}")
